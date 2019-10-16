@@ -2,6 +2,6 @@
 
 ## Dependencies
 * Node Packages
-** MySql
-** Inquirer
-** Dotenv
+    * MySql
+    * Inquirer
+    * Dotenv
