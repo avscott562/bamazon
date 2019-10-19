@@ -1,8 +1,8 @@
 require("dotenv").config();
-let inquirer = require("inquirer");
-let mysql = require("mysql");
+const inquirer = require("inquirer");
+const mysql = require("mysql");
 
-console.log(process.env.DB_USER);
+let inventory = [];
 
 var connection = mysql.createConnection({
   host: process.env.DB_HOST,
@@ -31,30 +31,51 @@ function display() {
   console.log("Selecting all products...\n");
     connection.query("SELECT * FROM products", function(err, res) {
       if (err) throw err;
-      // Log all results of the SELECT statement
-      console.log(res);
-      console.log(res.length);
+      //display all of the items available for sale.
+      for (i=0; i<res.length; i++) {
+        //checks if quantity is available for sale and add to inventory if any in stock.
+        if (res[i].stock_quantity > 0) {
+          let product = new Product(res[i].item_id, res[i].product_name, res[i].price);
+          inventory.push(product);
+        }
+      }
+      //checks if any items are available for sale and displays them if they are.
+      if (inventory.length > 0) {
+        console.log(inventory);
+      } else {
+        //if no items available for sale, end connection to database
+        connection.end();
+      }
+
+      // The app should then prompt users with two messages.
       purchase();
     });
 }
 
-// The app should then prompt users with two messages.
 
 function purchase() {
   // The first should ask them the ID of the product they would like to buy.
   inquirer
-    .prompt({
-      name: "Item_id",
-      type: "input",
-      message: "What is the item id of the product you would like to purchase?"
-    })
+    .prompt([
+      {
+        name: "Item_id",
+        type: "input",
+        message: "What is the item id of the product you would like to purchase?"
+      },
+      // The second message should ask how many units of the product they would like to buy.
+      {
+        name: "quantity",
+        type: "input",
+        message: "How many units would you like to buy?",
+        default: 1
+      }
+    ])
     .then(function(answer) {
       console.log(answer.Item_id);
+      console.log(answer.quantity);
     });
     connection.end();
 }
-
-// The second message should ask how many units of the product they would like to buy.
 
 
 
@@ -133,3 +154,10 @@ function purchase() {
   //     }
   //   );
   // }
+
+  //Constructor function to get product info to display for user
+  function Product(id, product, price) {
+    this.item_id = id;
+    this.product_name = product;
+    this.price = price;
+  }
