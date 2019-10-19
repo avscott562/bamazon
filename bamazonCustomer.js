@@ -54,27 +54,109 @@ function display() {
 
 
 function purchase() {
-  // The first should ask them the ID of the product they would like to buy.
-  inquirer
-    .prompt([
-      {
+  //get items from datbase
+  connection.query("SELECT * FROM products", function(err, res) {
+    if(err) throw err;
+    // The first should ask them the ID of the product they would like to buy.
+    inquirer
+      .prompt({
         name: "Item_id",
         type: "input",
-        message: "What is the item id of the product you would like to purchase?"
-      },
-      // The second message should ask how many units of the product they would like to buy.
-      {
-        name: "quantity",
-        type: "input",
-        message: "How many units would you like to buy?",
-        default: 1
-      }
-    ])
-    .then(function(answer) {
-      console.log(answer.Item_id);
-      console.log(answer.quantity);
-    });
-    connection.end();
+        message: "What is the item id of the product you would like to purchase?",
+        validate: function(value) {
+          if(isNaN(value)==false) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      })
+      .then(function(answer) {
+        //check to see if it is a valid item id
+        let validItemIds = [];
+        for (c=0; c<res.length; c++) {
+          validItemIds.push(parseInt(res[c].item_id));
+        }
+        console.log(validItemIds + " valid");
+        let inList = validItemIds.indexOf(parseInt(answer.Item_id));
+        console.log(inList + " in list");
+        //if it is a valid item id, ask user for quantity to purchase
+        if(inList !== -1) {
+          for (i=0; i<res.length; i++) {
+            if(res[i].item_id == answer.Item_id) {
+              let selectedItem = res[i];
+              if (selectedItem.stock_quantity > 0) {
+                // The second message should ask how many units of the product they would like to buy.
+                inquirer
+                .prompt({
+                  name: "quantity",
+                  type: "input",
+                  message: "How many units would you like to buy?",
+                  default: 1,
+                  validate: function(value) {
+                    if(isNaN(value)==false) {
+                      return true;
+                    } else {
+                      return false;
+                    }
+                  }
+                })
+                .then(function(answer) {
+                  if (selectedItem.stock_quantity <= answer.quantity) {
+                    console.log("Yay!  We have enough in stock.");
+                  } else {
+                    console.log("Sorry, we do not have enough to fulfilll your order.");
+                  }
+                })
+              } else {
+                console.log(selectedItem.product_name + " is out of stock.");
+                connection.end();
+              }
+              
+            }
+          }
+        } else {
+          console.log("Please select a valid Item ID.");
+          purchase();
+        }
+      });
+
+  })
+  // The first should ask them the ID of the product they would like to buy.
+  // inquirer
+  //   .prompt([
+  //     {
+  //       name: "Item_id",
+  //       type: "input",
+  //       message: "What is the item id of the product you would like to purchase?",
+  //       validate: function(value) {
+  //         if(isNaN(value)==false) {
+  //           return true;
+  //         } else {
+  //           return false;
+  //         }
+  //       }
+  //     },
+  //     // The second message should ask how many units of the product they would like to buy.
+  //     {
+  //       name: "quantity",
+  //       type: "input",
+  //       message: "How many units would you like to buy?",
+  //       default: 1,
+  //       validate: function(value) {
+  //         if(isNaN(value)==false) {
+  //           return true;
+  //         } else {
+  //           return false;
+  //         }
+  //       }
+  //     }
+  //   ])
+  //   .then(function(answer) {
+  //     console.log("You selected item " + answer.Item_id + ".");
+  //     console.log("You want to buy " + answer.quantity + " units of this product.");
+  //   });
+    // connection.end();
 }
 
 
