@@ -22,14 +22,9 @@ var connection = mysql.createConnection({
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
-
-  console.log("Displaying all products...\n");
-    connection.query("SELECT * FROM products", function(err, res) {
-        if(err) throw err;
-        console.log(res);
-        //run menu function to see available menu options on screen.
-        menu();
-    });
+  
+  //run menu function to see available menu options on screen.
+  menu();
 });
 
 //display menu options
@@ -41,11 +36,10 @@ function menu() {
         message: "What function do you want to perform?",
         choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product", "Exit"]
     }).then(function(answer) {
-        console.log(answer.menuChoice);
+
         switch(answer.menuChoice) {
             case "View Products for Sale": 
-                //run view products function;
-                console.log("view product worked");
+                viewProducts();
                 break;
             
             case "View Low Inventory":
@@ -61,13 +55,25 @@ function menu() {
                 break;
 
             case "Exit":
-                console.log("You are exiting."); 
+                console.log("You are exiting the app."); 
                 connection.end();
                 break;
         }
     });
 }
 
+
+// If a manager selects View Products for Sale, the app should list every available item: the item IDs, names, prices, and quantities.
+function viewProducts() {
+    console.log("Displaying all products available for sale.\n");
+    connection.query("SELECT * FROM products WHERE stock_quantity > 0", function(err, res) {
+        if(err) throw err;
+        for(i=0; i<res.length; i++) {
+            console.log("Item ID: " + res[i].item_id + "\n", "Product: " + res[i].product_name + "\n", "Price: $" + res[i].price.toFixed(2) + "\n", "Quantity Available: " + res[i].stock_quantity + "\n\n");
+        }
+        connection.end();
+    });
+}
 
 // allow the manager to add a completely new product to the store.
 function addProduct() {
@@ -202,33 +208,6 @@ function lowInventory() {
                 break;
 
         }
-        // if(res.length > 0) && (res.length < 2) {
-        //     console.log("These item(s) need to be restocked...\n");
-        //     console.log(res);
-        // } else {
-            
-        // }
         connection.end();
     })
 }
-
-  // function deleteProduct() {
-  //   console.log("Deleting all strawberry icecream...\n");
-  //   connection.query(
-  //     "DELETE FROM products WHERE ?",
-  //     {
-  //       flavor: "strawberry"
-  //     },
-  //     function(err, res) {
-  //       if (err) throw err;
-  //       console.log(res.affectedRows + " products deleted!\n");
-  //       // Call readProducts AFTER the DELETE completes
-  //       readProducts();
-  //     }
-  //   );
-  // }
-
-
-
-// If a manager selects View Products for Sale, the app should list every available item: the item IDs, names, prices, and quantities.
-
