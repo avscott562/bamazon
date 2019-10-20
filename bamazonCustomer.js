@@ -99,7 +99,7 @@ function purchase() {
                 inquirer
                 .prompt({
                   name: "quantity",
-                  type: "input",
+                  type: "number",
                   message: "How many units would you like to buy?",
                   default: 1,
                   validate: function(value) {
