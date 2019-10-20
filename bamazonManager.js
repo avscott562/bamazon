@@ -54,46 +54,7 @@ function menu() {
                 break;
             
             case "Add New Product":
-                inquirer.prompt([
-                    {
-                        name: "productName",
-                        type: "input",
-                        message: "What is the name of the product?"
-                    },
-                    {
-                        name: "departmentName",
-                        type: "input",
-                        message: "What is the name of the department?"
-                    },
-                    {
-                        name: "price",
-                        type: "number",
-                        message: "What is the price of the product?",
-                        validate: function(value) {
-                            if(isNaN(value)==false) {
-                              return true;
-                            } else {
-                              return false;
-                            }        
-                        }
-                    },
-                    {
-                        name: "stock",
-                        type: "input",
-                        message: "How many are in stock?",
-                        validate: function(value) {
-                            if(isNaN(value)==false) {
-                              return true;
-                            } else {
-                              return false;
-                            }        
-                        }
-                    }
-                ]).then(function(answer) {
-                console.log("add product worked");
-                //run addProduct function;
-                addProduct(answer.productName, answer.departmentName, answer.price, answer.stock);
-                });
+                addProduct();
                 break;
 
             case "Exit":
@@ -106,29 +67,80 @@ function menu() {
 
 
 // allow the manager to add a completely new product to the store.
-function addProduct(product, dept, price, qty) {
-    console.log("Inserting a new product...\n");
-    var query = connection.query(
-      "INSERT INTO products SET ?", 
-      {
-        product_name: product,
-        department_name: dept,
-        price: price,
-        stock_quantity: qty
-      },
+function addProduct() {
+    inquirer.prompt([
+        {
+            name: "productName",
+            type: "input",
+            message: "What is the name of the product?"
+        },
+        {
+            name: "departmentName",
+            type: "input",
+            message: "What is the name of the department?"
+        },
+        {
+            name: "price",
+            type: "number",
+            message: "What is the price of the product?",
+            validate: function(value) {
+                if(isNaN(value)==false) {
+                  return true;
+                } else {
+                  return false;
+                }        
+            }
+        },
+        {
+            name: "stock",
+            type: "input",
+            message: "How many are in stock?",
+            validate: function(value) {
+                if(isNaN(value)==false) {
+                  return true;
+                } else {
+                  return false;
+                }        
+            }
+        }
+    ])
+    .then(function(answer) {
+        console.log("Inserting a new product...\n");
+        var query = connection.query(
+        "INSERT INTO products SET ?", 
+        {
+            product_name: answer.productName,
+            department_name: answer.departmentName,
+            price: answer.price,
+            stock_quantity: answer.stock
+        },
+        function(err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " product inserted!\n");
+            connection.end();
+        }
+        );
+    })
+}
+
+// If a manager selects Add to Inventory, your app should display a prompt that will let the manager "add more" of any item currently in the store.
+function updateInventory(qty, amount, id) {
+    connection.query("UPDATE products SET ? WHERE ?",
+    [
+        {
+          stock_quantity: qty + amount
+        },
+        {
+          item_id: id
+        }
+      ],
       function(err, res) {
         if (err) throw err;
-        console.log(res.affectedRows + " product inserted!\n");
-        // Call updateProduct AFTER the INSERT completes
-        // updateProduct();
-      }
-    );
-  
-    // logs the actual query being run
-    // console.log(query.sql);
-    connection.end();
-    }
-  
+        console.log(res.affectedRows + " products updated!\n");
+        // Call deleteProduct AFTER the UPDATE completes
+        // deleteProduct();
+      })
+}  
   // function deleteProduct() {
   //   console.log("Deleting all strawberry icecream...\n");
   //   connection.query(
@@ -149,4 +161,3 @@ function addProduct(product, dept, price, qty) {
 
 // If a manager selects View Products for Sale, the app should list every available item: the item IDs, names, prices, and quantities.
 // If a manager selects View Low Inventory, then it should list all items with an inventory count lower than five.
-// If a manager selects Add to Inventory, your app should display a prompt that will let the manager "add more" of any item currently in the store.
