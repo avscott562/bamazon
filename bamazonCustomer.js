@@ -18,27 +18,34 @@ var connection = mysql.createConnection({
   database: "bamazon"
 });
 
+//establish connection to the database
 connection.connect(function(err) {
   if (err) throw err;
   console.log("connected as id " + connection.threadId + "\n");
+
+  //run display function to see available products on screen.
   display();
 });
 
-// Instructions
 
-// Running this application will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
+// displays all of the items available for sale.
 function display() {
   console.log("Selecting all products...\n");
     connection.query("SELECT * FROM products ORDER BY product_name", function(err, res) {
       if (err) throw err;
+
       //display all of the items available for sale.
       for (i=0; i<res.length; i++) {
+
         //checks if quantity is available for sale and add to inventory if any in stock.
         if (res[i].stock_quantity > 0) {
+
+          // grab the ids, names, and prices of products for sale.
           let product = new Product(res[i].item_id, res[i].product_name, res[i].price);
           inventory.push(product);
         }
       }
+      
       //checks if any items are available for sale and displays them if they are.
       if (inventory.length > 0) {
         console.log(inventory);
@@ -47,12 +54,12 @@ function display() {
         connection.end();
       }
 
-      // The app should then prompt users with two messages.
+      // run purchase function to get product and quatity from customer.
       purchase();
     });
 }
 
-
+//get the product and quantity of product the customer would like to purchase
 function purchase() {
   //get items from datbase
   connection.query("SELECT * FROM products", function(err, res) {
@@ -77,9 +84,10 @@ function purchase() {
         for (c=0; c<res.length; c++) {
           validItemIds.push(parseFloat(res[c].item_id));
         }
-        // console.log(validItemIds + " valid");
+
+        // check to see if the item id provided is valid
         let inList = validItemIds.indexOf(parseFloat(answer.Item_id));
-        // console.log(inList + " in list");
+        
         //if it is a valid item id, ask user for quantity to purchase
         if(inList !== -1) {
           for (i=0; i<res.length; i++) {
@@ -87,7 +95,7 @@ function purchase() {
               let selectedItem = res[i];
               let stock = parseFloat(selectedItem.stock_quantity);
               if (stock > 0) {
-                // The second message should ask how many units of the product they would like to buy.
+                // if there is at least 1 in stock, ask the user how many they want to purchase
                 inquirer
                 .prompt({
                   name: "quantity",
@@ -104,11 +112,15 @@ function purchase() {
                 })
                 .then(function(answer) {
                   let units = parseFloat(answer.quantity);
-                  // Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
+                  // check to see if there is sufficent quantity to meet the customer's request.
                   if (stock >= units) {
                     console.log("Yay!  We have enough in stock to fulfill your order.");
+
+                    // However, if your store does have enough of the product, you should fulfill the customer's order.
+                    // This means updating the SQL database to reflect the remaining quantity.
                     updateQuantity(stock, units, selectedItem.item_id, selectedItem.price);
                   } else {
+
                     // If not, the app should log a phrase like Insufficient quantity!, and then prevent the order from going through.
                     console.log("Sorry, we do not have enough to fulfilll your order.");
                     connection.end();
@@ -122,7 +134,7 @@ function purchase() {
             }
           }
         } else {
-          console.log("Please select a valid Item ID.");
+          console.log("Please select a valid Item ID.\n");
           purchase();
         }
       });
@@ -147,6 +159,7 @@ function updateQuantity(total, amount, itemNumber, price) {
     function(err, res) {
       if (err) throw err;
       // console.log(res.affectedRows + " products updated!\n");
+
       // Once the update goes through, show the customer the total cost of their purchase.
       console.log("Your total is $" + (price * amount).toFixed(2) + ".");
       connection.end();
@@ -158,47 +171,10 @@ function updateQuantity(total, amount, itemNumber, price) {
 }
   
 
-
-  // function createProduct() {
-  //   console.log("Inserting a new product...\n");
-  //   var query = connection.query(
-  //     "INSERT INTO products SET ?", 
-  //     {
-  //       flavor: "Rocky Road",
-  //       price: 3.0,
-  //       quantity: 50
-  //     },
-  //     function(err, res) {
-  //       if (err) throw err;
-  //       console.log(res.affectedRows + " product inserted!\n");
-  //       // Call updateProduct AFTER the INSERT completes
-  //       updateProduct();
-  //     }
-  //   );
   
-  //   // logs the actual query being run
-  //   console.log(query.sql);
-  //   }
-  
-  // function deleteProduct() {
-  //   console.log("Deleting all strawberry icecream...\n");
-  //   connection.query(
-  //     "DELETE FROM products WHERE ?",
-  //     {
-  //       flavor: "strawberry"
-  //     },
-  //     function(err, res) {
-  //       if (err) throw err;
-  //       console.log(res.affectedRows + " products deleted!\n");
-  //       // Call readProducts AFTER the DELETE completes
-  //       readProducts();
-  //     }
-  //   );
-  // }
-
   //Constructor function to get product info to display for user
-  function Product(id, product, price) {
-    this.item_id = id;
-    this.product_name = product;
-    this.price = price;
-  }
+function Product(id, product, price) {
+  this.item_id = id;
+  this.product_name = product;
+  this.price = price;
+}
