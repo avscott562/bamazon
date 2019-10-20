@@ -29,7 +29,7 @@ connection.connect(function(err) {
 // Running this application will first display all of the items available for sale. Include the ids, names, and prices of products for sale.
 function display() {
   console.log("Selecting all products...\n");
-    connection.query("SELECT * FROM products", function(err, res) {
+    connection.query("SELECT * FROM products ORDER BY product_name", function(err, res) {
       if (err) throw err;
       //display all of the items available for sale.
       for (i=0; i<res.length; i++) {
@@ -75,17 +75,18 @@ function purchase() {
         //check to see if it is a valid item id
         let validItemIds = [];
         for (c=0; c<res.length; c++) {
-          validItemIds.push(parseInt(res[c].item_id));
+          validItemIds.push(parseFloat(res[c].item_id));
         }
-        console.log(validItemIds + " valid");
-        let inList = validItemIds.indexOf(parseInt(answer.Item_id));
-        console.log(inList + " in list");
+        // console.log(validItemIds + " valid");
+        let inList = validItemIds.indexOf(parseFloat(answer.Item_id));
+        // console.log(inList + " in list");
         //if it is a valid item id, ask user for quantity to purchase
         if(inList !== -1) {
           for (i=0; i<res.length; i++) {
             if(res[i].item_id == answer.Item_id) {
               let selectedItem = res[i];
-              if (selectedItem.stock_quantity > 0) {
+              let stock = parseFloat(selectedItem.stock_quantity);
+              if (stock > 0) {
                 // The second message should ask how many units of the product they would like to buy.
                 inquirer
                 .prompt({
@@ -102,10 +103,15 @@ function purchase() {
                   }
                 })
                 .then(function(answer) {
-                  if (selectedItem.stock_quantity <= answer.quantity) {
-                    console.log("Yay!  We have enough in stock.");
+                  let units = parseFloat(answer.quantity);
+                  // Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
+                  if (stock >= units) {
+                    console.log("Yay!  We have enough in stock to fulfill your order.");
+                    updateQuantity(stock, units, selectedItem.item_id, selectedItem.price);
                   } else {
+                    // If not, the app should log a phrase like Insufficient quantity!, and then prevent the order from going through.
                     console.log("Sorry, we do not have enough to fulfilll your order.");
+                    connection.end();
                   }
                 })
               } else {
@@ -120,60 +126,36 @@ function purchase() {
           purchase();
         }
       });
-
   })
-  // The first should ask them the ID of the product they would like to buy.
-  // inquirer
-  //   .prompt([
-  //     {
-  //       name: "Item_id",
-  //       type: "input",
-  //       message: "What is the item id of the product you would like to purchase?",
-  //       validate: function(value) {
-  //         if(isNaN(value)==false) {
-  //           return true;
-  //         } else {
-  //           return false;
-  //         }
-  //       }
-  //     },
-  //     // The second message should ask how many units of the product they would like to buy.
-  //     {
-  //       name: "quantity",
-  //       type: "input",
-  //       message: "How many units would you like to buy?",
-  //       default: 1,
-  //       validate: function(value) {
-  //         if(isNaN(value)==false) {
-  //           return true;
-  //         } else {
-  //           return false;
-  //         }
-  //       }
-  //     }
-  //   ])
-  //   .then(function(answer) {
-  //     console.log("You selected item " + answer.Item_id + ".");
-  //     console.log("You want to buy " + answer.quantity + " units of this product.");
-  //   });
-    // connection.end();
 }
 
 
-
-// Once the customer has placed the order, your application should check if your store has enough of the product to meet the customer's request.
-
-
-
-// If not, the app should log a phrase like Insufficient quantity!, and then prevent the order from going through.
-
-
-
 // However, if your store does have enough of the product, you should fulfill the customer's order.
-
-
 // This means updating the SQL database to reflect the remaining quantity.
-// Once the update goes through, show the customer the total cost of their purchase.
+function updateQuantity(total, amount, itemNumber, price) {
+  console.log("\nUpdating product stock quantities...\n");
+  var query = connection.query(
+    "UPDATE products SET ? WHERE ?",
+    [
+      {
+        stock_quantity: total - amount
+      },
+      {
+        item_id: itemNumber
+      }
+    ],
+    function(err, res) {
+      if (err) throw err;
+      // console.log(res.affectedRows + " products updated!\n");
+      // Once the update goes through, show the customer the total cost of their purchase.
+      console.log("Your total is $" + (price * amount).toFixed(2) + ".");
+      connection.end();
+    }
+  );
+
+  // logs the actual query being run
+  // console.log(query.sql);
+}
   
 
 
@@ -197,29 +179,6 @@ function purchase() {
   //   // logs the actual query being run
   //   console.log(query.sql);
   //   }
-  // function updateProduct() {
-  //   console.log("Updating all Rocky Road quantities...\n");
-  //   var query = connection.query(
-  //     "UPDATE products SET ? WHERE ?",
-  //     [
-  //       {
-  //         quantity: 100
-  //       },
-  //       {
-  //         flavor: "Rocky Road"
-  //       }
-  //     ],
-  //     function(err, res) {
-  //       if (err) throw err;
-  //       console.log(res.affectedRows + " products updated!\n");
-  //       // Call deleteProduct AFTER the UPDATE completes
-  //       deleteProduct();
-  //     }
-  //   );
-  
-  //   // logs the actual query being run
-  //   console.log(query.sql);
-  // }
   
   // function deleteProduct() {
   //   console.log("Deleting all strawberry icecream...\n");
