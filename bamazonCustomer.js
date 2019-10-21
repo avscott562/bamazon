@@ -30,33 +30,37 @@ connection.connect(function(err) {
 
 // displays all of the items available for sale.
 function display() {
-  console.log("Selecting all products...\n");
-    connection.query("SELECT * FROM products ORDER BY product_name", function(err, res) {
-      if (err) throw err;
+  connection.query("SELECT * FROM products ORDER BY item_id", function(err, res) {
+    if (err) throw err;
 
-      //display all of the items available for sale.
-      for (i=0; i<res.length; i++) {
+    //display all of the items available for sale.
+    for (i=0; i<res.length; i++) {
 
-        //checks if quantity is available for sale and add to inventory if any in stock.
-        if (res[i].stock_quantity > 0) {
+      //checks if quantity is available for sale and add to inventory if any in stock.
+      if (res[i].stock_quantity > 0) {
 
-          // grab the ids, names, and prices of products for sale.
-          let product = new Product(res[i].item_id, res[i].product_name, res[i].price);
-          inventory.push(product);
-        }
+        // grab the ids, names, and prices of products for sale.
+        let product = new Product(res[i].item_id, res[i].product_name, res[i].price);
+        inventory.push(product);
       }
-      
-      //checks if any items are available for sale and displays them if they are.
-      if (inventory.length > 0) {
-        console.log(inventory);
-      } else {
-        //if no items available for sale, end connection to database
-        connection.end();
+    }
+    
+    //checks if any items are available for sale and displays them if they are.
+    if (inventory.length > 0) {
+      console.log("Available products listed below.\n");
+      for(a=0; a<inventory.length; a++) {
+        console.log("Item ID: " + inventory[a].item_id + "\nProduct Name: " + inventory[a].product_name + "\nPrice: $" + (inventory[a].price).toFixed(2) + "\n\n");
       }
+      // console.log(inventory);
+    } else {
+      //if no items available for sale, end connection to database
+      console.log("Sorry, we are out of stock on all items.  Please try again later.");
+      connection.end();
+    }
 
-      // run purchase function to get product and quatity from customer.
-      purchase();
-    });
+    // run purchase function to get product and quatity from customer.
+    purchase();
+  });
 }
 
 //get the product and quantity of product the customer would like to purchase
