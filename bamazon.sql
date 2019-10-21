@@ -26,6 +26,21 @@ CREATE TABLE products (
     PRIMARY KEY(item_id)
 );
 
+-- // Create a new MySQL table called departments. Your table should include the following columns:
+CREATE TABLE departments (
+    -- // department_id
+    department_id INT AUTO_INCREMENT NOT NULL,
+    -- // department_name
+    department_name VARCHAR(50) NULL,
+    -- // over_head_costs (A dummy number you set for each department)
+    over_head_costs DECIMAL(9,2),
+    PRIMARY KEY(department_id)
+);
+
+ALTER TABLE products ADD product_sales DECIMAL(9,2) DEFAULT 0.00;
+-- UPDATE products SET product_sales = 0.00;
+ALTER TABLE departments AUTO_INCREMENT=01;
+
 
 
 -- Populate this database with around 10 different products. (i.e. Insert "mock" data rows into this database and table).

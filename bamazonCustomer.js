@@ -118,7 +118,7 @@ function purchase() {
 
                     // However, if your store does have enough of the product, you should fulfill the customer's order.
                     // This means updating the SQL database to reflect the remaining quantity.
-                    updateQuantity(stock, units, selectedItem.item_id, selectedItem.price);
+                    updateQuantity(stock, units, selectedItem.item_id, selectedItem.price, selectedItem.product_sales);
                   } else {
 
                     // If not, the app should log a phrase like Insufficient quantity!, and then prevent the order from going through.
@@ -144,13 +144,15 @@ function purchase() {
 
 // However, if your store does have enough of the product, you should fulfill the customer's order.
 // This means updating the SQL database to reflect the remaining quantity.
-function updateQuantity(total, amount, itemNumber, price) {
+function updateQuantity(total, amount, itemNumber, price, totalSales) {
+  let sales = parseFloat((price * amount).toFixed(2));
   console.log("\nUpdating product stock quantities...\n");
   var query = connection.query(
     "UPDATE products SET ? WHERE ?",
     [
       {
-        stock_quantity: total - amount
+        stock_quantity: total - amount,
+        product_sales: totalSales + sales
       },
       {
         item_id: itemNumber
@@ -161,7 +163,7 @@ function updateQuantity(total, amount, itemNumber, price) {
       // console.log(res.affectedRows + " products updated!\n");
 
       // Once the update goes through, show the customer the total cost of their purchase.
-      console.log("Your total is $" + (price * amount).toFixed(2) + ".");
+      console.log("Your total is $" + sales + ".");
       connection.end();
     }
   );
