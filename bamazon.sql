@@ -22,8 +22,6 @@ CREATE TABLE products (
     price DECIMAL(5,2) NULL,
     -- stock_quantity (how much of the product is available in stores)
     stock_quantity INTEGER NULL,
-    -- total sales for this product
-    product_sales DECIMAL(9,2) DEFAULT 0.00,
     -- PRIMARY_KEY(item_id);
     PRIMARY KEY(item_id)
 );
@@ -45,7 +43,7 @@ CREATE TABLE departments (
     PRIMARY KEY(department_id)
 );
 
--- ALTER TABLE products ADD product_sales DECIMAL(9,2) DEFAULT 0.00;
+ALTER TABLE products ADD product_sales DECIMAL(9,2) DEFAULT 0.00;
 ALTER TABLE departments AUTO_INCREMENT=01;
 
 

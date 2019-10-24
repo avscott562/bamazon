@@ -1,6 +1,7 @@
 require("dotenv").config();
 const inquirer = require("inquirer");
 const mysql = require("mysql");
+const {printTable} = require('console-table-printer');
 
 // let inventory = [];
 
@@ -43,7 +44,7 @@ function menu() {
                 break;
             
             case "Create New Department":
-                console.log("create new department function should run here.")
+                newDept();
                 break;
             
             case "Exit":
@@ -55,13 +56,54 @@ function menu() {
 }
 
 
-
-// Modify the products table so that there's a product_sales column, and modify your bamazonCustomer.js app so that when a customer purchases anything from the store, the price of the product multiplied by the quantity purchased is added to the product's product_sales column.
-
-
-
-// Make sure your app still updates the inventory listed in the products column.
-
-
 // View Product Sales by Department
+function viewSales() {
+
+}
+
 // Create New Department
+function newDept() {
+    inquirer.prompt([
+        {
+            name: "departmentName",
+            type: "input",
+            message: "What is the name of the department?"
+        },
+        {
+            name: "overheadCost",
+            type: "number",
+            message: "How much is the overhead cost for this department?",
+            validate: function(value) {
+                if(isNaN(value)==false) {
+                  return true;
+                } else {
+                  return false;
+                }        
+            }
+        }
+    ])
+    .then(function(answer) {
+        console.log("Inserting a new department...\n");
+        var query = connection.query(
+        "INSERT INTO departments SET ?", 
+        {
+            department_name: answer.departmentName,
+            over_head_costs: answer.overheadCost
+        },
+        function(err, res) {
+            if (err) throw err;
+            console.log(res.affectedRows + " product inserted!\n");
+            connection.end();
+        }
+        );
+    });
+}
+
+//Create a table
+const testCases = [
+    { index: 3, text: 'I would like some gelb bananen bitte', value: 100 },
+    { index: 4, text: 'I hope batch update is working', value: 300 }
+];
+ 
+//print
+printTable(testCases);
