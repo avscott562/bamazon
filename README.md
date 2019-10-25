@@ -18,23 +18,39 @@ The user will then be prompted to enter the ID of the item they want to purchase
 The product table will update the iventory and display the total sales for the proudct.
 <img src="images/product-table-after.png" width="300">
 
-
+---
 #### Manager View
-To search for song details, go to your terminal in the folder where the liri.js file is stored.  Type `node liri.js spotify-this-song <ENTER SONG TITLE HERE>` then press enter.  If no song title is entered, it will search for *"The Sign"* by Ace of Base.  The screen will display the artist or band name, the song title, a preview link to the song on *Spotify*, and name of the album the song is on.  Below is a screenshot of what the output will look like.
+The manager view allows the user to manage the inventory.  Type `node bamazonManager.js` on the command line in the terminal then press enter.  After running this command, a list of the 4 menu items will display.  The menu items are **View Products for Sale**, **View low inventory**, **Add To Inventory**, and **Add New Product**.
+<img src="images/manager-menu.png" width="300">
 
-<img src="assets/images/spotify-this-song.png" width="500">
+View Products for Sale allows you to see a list of available products.
+<img src="images/manager-view.png" width="300">
 
+View Low Inventory allows you to see a list of the items that need to be restocked.  These items have less than 5 available.
+<img src="images/manager-table-low.png" width="300">
+<img src="images/manager-low.png" width="300">
 
+Add to Inventory allows the user to add to the inventory for any item currently in the store.  The user will be prompted to enter the ID that is being restocked and the quantity being added.
+<img src="images/manager-inventory.png" width="300">
+<img src="images/manager-table-inventory.png" width="300">
+
+Add New Product allows the user to add a new item to the store.  The user will be prompted to give the name of the product, the department, the price, and the quantity.
+<img src="images/manager-add.png" width="300">
+<img src="images/manager-table-add.png" width="300">
+
+---
 #### Supervisor View
-To search for movie details, go to your terminal in the folder where the liri.js file is stored.  Type `node liri.js movie-this <ENTER MOVIE TITLE HERE>` then press enter.  If no movie title is entered, it will search for *"Mr. Nobody"*.  The movie title, stars of the film, year the movie came out, *IMDB* rating, *Rotten Tomatoes* rating, country where the film was produced, the language the movie is in, and the plot will appear on the screen.  Below is a screenshot of what the output will look like.
+The supervisor view allows the user to supervise the departments.  Type `node bamazonSupervisor.js` on the command line in the terminal then press enter.  After running this command, a list of the 2 menu items will display.  The menu items are **View Product Sales by Department** and **Create New Department**.
+<img src="images/super-menu.png" width="300">
 
-<img src="assets/images/movie-this.png" width="500">
+View Product Sales by Department is still being developed.  Eventually, this option will allow the user to view the overhead costs, total sales, and total profit of each department.
 
+Create New Department allows the user to add a new department to the table.  
+<img src="images/super-table-before.png" width="300">
 
-#### Do-What-It-Says
-This command runs based upon preloaded search item in the `random.txt` file.  To run, go to your terminal in the folder where the liri.js file is stored.  Type `node liri.js do-what-it-says` then press enter.  LiriBot will read the `random.txt` and perform the search designated in that file.  The output will be the same as what was described above based upon the search designed in the file.  For the example below, the `random.txt` file had *spotify-this-song,"I Want it That Way"* in it.  The screenshot below captures what was displayed after `node liri.js do-what-it-says` was run.
-
-<img src="assets/images/do-what-it-says.png" width="500">
+The user will be prompted to enter the name of the department and the overhead cost.  The table will then be updated to reflect the new department.
+<img src="images/super-create.png" width="300">
+<img src="images/super-table-after.png" width="300">
 
 ---
 

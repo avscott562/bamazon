@@ -41,6 +41,7 @@ function menu() {
         switch(answer.menuChoice) {
             case "View Product Sales by Department": 
                 console.log("view product function should run here.");
+                connection.end();
                 break;
             
             case "Create New Department":
@@ -100,10 +101,10 @@ function newDept() {
 }
 
 //Create a table
-const testCases = [
-    { index: 3, text: 'I would like some gelb bananen bitte', value: 100 },
-    { index: 4, text: 'I hope batch update is working', value: 300 }
-];
+// const testCases = [
+//     { index: 3, text: 'I would like some gelb bananen bitte', value: 100 },
+//     { index: 4, text: 'I hope batch update is working', value: 300 }
+// ];
  
-//print
-printTable(testCases);
+// //print
+// printTable(testCases);
