@@ -2,6 +2,7 @@ require("dotenv").config();
 const inquirer = require("inquirer");
 const mysql = require("mysql");
 const Table = require("cli-table");
+const colors = require("colors");
 
 // let inventory = [];
 
@@ -66,12 +67,12 @@ function viewSales() {
         
         //Create a table
         let table = new Table({
-            head: ["id", "department_name", "product_sales"],
-            colWidths: [5, 30, 15]
+            head: ["id", "department_name", "overhead_costs", "product_sales", "total_profit"],
+            colWidths: [5, 25, 12, 12, 12]
         });
 
         for (i=0; i<res.length; i++) {
-            table.push([("0"+(i+1)), res[i].department_name, ("$" + res[i].sales)]);
+            table.push([("0"+(i+1)), res[i].department_name,"$100000", ("$" + res[i].sales), "$33500"]);
         }
 
         console.log(table.toString());
