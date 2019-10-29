@@ -43,7 +43,7 @@ Add New Product allows the user to add a new item to the store.  The user will b
 The supervisor view allows the user to supervise the departments.  Type `node bamazonSupervisor.js` on the command line in the terminal then press enter.  After running this command, a list of the 2 menu items will display.  The menu items are **View Product Sales by Department** and **Create New Department**.
 <img src="images/super-menu.png" width="300">
 
-View Product Sales by Department is still being developed.  Eventually, this option will allow the user to view the overhead costs, total sales, and total profit of each department.
+View Product Sales by Department allows the user to view the overhead costs, total sales, and total profit of each department.
 
 Create New Department allows the user to add a new department to the table.  
 <img src="images/super-table-before.png" width="300">
@@ -60,6 +60,7 @@ The user will be prompted to enter the name of the department and the overhead c
     * MySql
     * Inquirer
     * Dotenv
+    * CLI Table
 
 
 ---

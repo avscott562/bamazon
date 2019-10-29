@@ -1,7 +1,7 @@
 require("dotenv").config();
 const inquirer = require("inquirer");
 const mysql = require("mysql");
-const {printTable} = require('console-table-printer');
+const Table = require("cli-table");
 
 // let inventory = [];
 
@@ -40,8 +40,7 @@ function menu() {
 
         switch(answer.menuChoice) {
             case "View Product Sales by Department": 
-                console.log("view product function should run here.");
-                connection.end();
+                viewSales();
                 break;
             
             case "Create New Department":
@@ -59,6 +58,27 @@ function menu() {
 
 // View Product Sales by Department
 function viewSales() {
+
+    console.log("\nCalculating Profit...\n");
+    var query = connection.query(
+    "SELECT department_name, SUM(product_sales) AS sales FROM products GROUP BY department_name", function(err, res) {
+        if (err) throw err;
+        
+        //Create a table
+        let table = new Table({
+            head: ["id", "department_name", "product_sales"],
+            colWidths: [5, 30, 15]
+        });
+
+        for (i=0; i<res.length; i++) {
+            table.push([("0"+(i+1)), res[i].department_name, ("$" + res[i].sales)]);
+        }
+
+        console.log(table.toString());
+
+        connection.end();
+    }
+    );
 
 }
 
@@ -99,12 +119,3 @@ function newDept() {
         );
     });
 }
-
-//Create a table
-// const testCases = [
-//     { index: 3, text: 'I would like some gelb bananen bitte', value: 100 },
-//     { index: 4, text: 'I hope batch update is working', value: 300 }
-// ];
- 
-// //print
-// printTable(testCases);

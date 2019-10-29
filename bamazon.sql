@@ -39,7 +39,7 @@ CREATE TABLE departments (
     -- // department_name
     department_name VARCHAR(50) NULL,
     -- // over_head_costs (A dummy number you set for each department)
-    over_head_costs DECIMAL(9,2),
+    over_head_costs INTEGER,
     PRIMARY KEY(department_id)
 );
 
