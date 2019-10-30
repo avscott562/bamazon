@@ -71,7 +71,7 @@ function viewSales() {
         //Create a table
         let table = new Table({
             head: ["id", "department_name", "overhead_costs", "product_sales", "total_profit"],
-            colWidths: [5, 25, 12, 12, 12]
+            colWidths: [5, 25, 17, 15, 15]
         });
 
         for (i=0; i<res.length; i++) {
@@ -117,7 +117,7 @@ function newDept() {
         },
         function(err, res) {
             if (err) throw err;
-            console.log(res.affectedRows + " product inserted!\n");
+            console.log(res.affectedRows + " department added!\n");
             connection.end();
         }
         );

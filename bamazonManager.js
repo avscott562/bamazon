@@ -126,10 +126,59 @@ function addProduct() {
         function(err, res) {
             if (err) throw err;
             console.log(res.affectedRows + " product inserted!\n");
-            connection.end();
         }
         );
-    })
+
+        var allQuery = connection.query("SELECT department_name FROM departments", function(err, result) {
+            if (err) throw err;
+
+            let found = 0
+            
+            for (i=0; i<result.length; i++) {
+                if (answer.departmentName === result[i].department_name) {
+                    console.log("found it!");
+                    found++;
+                }
+            }
+
+            if(found > 0) {
+                console.log("Department exists");
+                connection.end();
+            } else {
+                console.log("Inserting a new department...\n");
+                
+                inquirer.prompt(
+                    {
+                        name: "overheadCost",
+                        type: "number",
+                        message: "How much is the overhead cost for this department?",
+                        validate: function(value) {
+                            if(isNaN(value)==false) {
+                              return true;
+                            } else {
+                              return false;
+                            }        
+                        }
+                    }
+                )
+                .then(function(newAnswer) {
+                    console.log(answer.departmentName);
+                    console.log(newAnswer.overheadCost);
+                    let deptQuery = connection.query(
+                    "INSERT INTO departments SET ?", 
+                    {
+                        department_name: answer.departmentName,
+                        over_head_costs: newAnswer.overheadCost
+                    }, 
+                    function(error, newRes) {
+                        if (err) throw err;
+                        console.log(newRes.affectedRows + " department added!\n");
+                        connection.end();
+                    })
+                });
+            };
+        });
+    });
 }
 
 // If a manager selects Add to Inventory, your app should display a prompt that will let the manager "add more" of any item currently in the store.
