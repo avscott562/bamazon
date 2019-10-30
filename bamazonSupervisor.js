@@ -61,10 +61,13 @@ function menu() {
 function viewSales() {
 
     console.log("\nCalculating Profit...\n");
+    let subQuery = "SELECT department_name, SUM(product_sales) AS sales FROM products GROUP BY department_name";
     var query = connection.query(
-    "SELECT department_name, SUM(product_sales) AS sales FROM products GROUP BY department_name", function(err, res) {
+    "SELECT * FROM (" + subQuery + ") AS p RIGHT JOIN departments AS d ON d.department_name = p.department_name ORDER BY d.department_id", function(err, res) {
         if (err) throw err;
         
+        console.log(res);
+
         //Create a table
         let table = new Table({
             head: ["id", "department_name", "overhead_costs", "product_sales", "total_profit"],
@@ -72,7 +75,7 @@ function viewSales() {
         });
 
         for (i=0; i<res.length; i++) {
-            table.push([("0"+(i+1)), res[i].department_name,"$100000", ("$" + res[i].sales), "$33500"]);
+            table.push([("0"+ res[i].department_id), res[i].department_name, res[i].over_head_costs, ("$" + res[i].sales), ("$" + (res[i].sales - res[i].over_head_costs))]);
         }
 
         console.log(table.toString());
