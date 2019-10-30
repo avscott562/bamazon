@@ -65,8 +65,6 @@ function viewSales() {
     var query = connection.query(
     "SELECT * FROM (" + subQuery + ") AS p RIGHT JOIN departments AS d ON d.department_name = p.department_name ORDER BY d.department_id", function(err, res) {
         if (err) throw err;
-        
-        console.log(res);
 
         //Create a table
         let table = new Table({
