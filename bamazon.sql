@@ -44,7 +44,9 @@ CREATE TABLE departments (
 );
 
 ALTER TABLE products ADD product_sales DECIMAL(9,2) DEFAULT 0.00;
-ALTER TABLE departments AUTO_INCREMENT=01;
+
+INSERT INTO departments (department_name, over_head_costs)
+VALUES ("Office", 5000), ("Apparel & Accessories", 12500), ("Health & Beauty", 1370), ("Electronics", 3600);
 
 
 -- SELECT * FROM products
